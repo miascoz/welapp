@@ -1217,7 +1217,7 @@ Categorias válidas: "Biohacking Básico", "Micronutrientes", "Biohacking Avanç
 Ordene: Básico → Micronutrientes → Avançado → Peptídeos. O item com impacto 5 deve vir por ÚLTIMO.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/protocol', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1416,7 +1416,7 @@ Formato EXATO — retorne APENAS JSON sem markdown:
 Tipos válidos: "Peptídeo", "Micronutrientes Avançados", "Biohacking Avançado", "Recuperação", "Protocolo Metabólico"`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/protocol', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
