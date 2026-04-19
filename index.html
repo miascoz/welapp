@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEALTHNESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0A0A0A;
+    --yellow: #DEFF0A;
+    --white: #F5F5F0;
+    --gray: #1A1A1A;
+    --gray2: #2A2A2A;
+    --muted: #666;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* LAYOUT */
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  .screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 0;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .screen.active { display: flex; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* HEADER */
+  .screen-header {
+    padding: 48px 32px 24px;
+    position: relative;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--yellow);
+  }
+
+  .progress-bar {
+    margin-top: 20px;
+    height: 2px;
+    background: var(--gray2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--yellow);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* QUESTION BODY */
+  .screen-body {
+    flex: 1;
+    padding: 0 32px 32px;
+  }
+
+  .step-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .question-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 8vw, 48px);
+    line-height: 1.0;
+    letter-spacing: 1px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .question-sub {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--gray);
+    border: 1.5px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .option:hover {
+    border-color: var(--yellow);
+    background: #1E1E1E;
+  }
+
+  .option.selected {
+    border-color: var(--yellow);
+    background: #1A1A00;
+    color: var(--yellow);
+  }
+
+  .option-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--muted);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .option.selected .option-dot {
+    background: var(--yellow);
+    border-color: var(--yellow);
+  }
+
+  .option-dot-inner {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--black);
+    display: none;
+  }
+
+  .option.selected .option-dot-inner { display: block; }
+
+  /* MULTI SELECT HINT */
+  .multi-hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+
+  /* CTA */
+  .screen-footer {
+    padding: 0 32px 48px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--yellow);
+    color: var(--black);
+    border: none;
+    font-family: var(--font-display);
+    font-size: 18px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+  }
+
+  .btn-primary:hover { background: #E8FF40; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  /* ── WELCOME SCREEN ── */
+  #screen-welcome {
+    justify-content: flex-end;
+    padding-bottom: 0;
+    background: 
+      radial-gradient(ellipse at 80% 20%, rgba(222,255,10,0.08) 0%, transparent 60%),
+      var(--black);
+  }
+
+  .welcome-top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 32px 40px;
+  }
+
+  .welcome-logo {
+    font-family: var(--font-display);
+    font-size: 72px;
+    letter-spacing: 8px;
+    line-height: 1;
+    color: var(--white);
+  }
+
+  .welcome-logo span { color: var(--yellow); }
+
+  .welcome-tagline {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 16px;
+    margin-bottom: 40px;
+  }
+
+  .welcome-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #999;
+    font-weight: 300;
+    max-width: 320px;
+  }
+
+  .welcome-strip {
+    background: var(--yellow);
+    padding: 40px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .welcome-strip-text {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--black);
+    line-height: 1.1;
+  }
+
+  .welcome-strip-sub {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  .btn-start {
+    padding: 14px 28px;
+    background: var(--black);
+    color: var(--yellow);
+    border: none;
+    font-family: var(--font-display);
+    font-size: 16px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .btn-start:hover { background: #111; }
+
+  /* ── LOADING SCREEN ── */
+  #screen-loading {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 32px;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(222,255,10,0.05) 0%, transparent 70%),
+      var(--black);
+  }
+
+  .loading-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--gray2);
+    border-top-color: var(--yellow);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 40px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+
+  .loading-status {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    min-height: 20px;
+    transition: opacity 0.3s;
+  }
+
+  .loading-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 40px;
+  }
+
+  .loading-tag {
+    padding: 6px 14px;
+    background: var(--gray);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: all 0.5s ease;
+  }
+
+  .loading-tag.visible {
+    opacity: 1;
+    color: var(--yellow);
+    background: #1A1A00;
+    border: 1px solid var(--yellow);
+  }
+
+  /* ── RESULT SCREEN ── */
+  #screen-result {
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(222,255,10,0.06) 0%, transparent 50%),
+      var(--black);
+  }
+
+  .result-header {
+    padding: 48px 32px 32px;
+    border-bottom: 1px solid var(--gray2);
+  }
+
+  .result-archetype-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .result-archetype-name {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 10vw, 56px);
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .result-motor {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--gray);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .result-motor::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+  }
+
+  .result-scores {
+    padding: 24px 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    border-bottom: 1px solid var(--gray2);
+  }
+
+  .score-card {
+    background: var(--gray);
+    padding: 14px 16px;
+    border-radius: 4px;
+  }
+
+  .score-card-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .score-card-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .score-card.dominant .score-card-value { color: var(--yellow); }
+  .score-card.dominant { background: #1A1A00; border: 1px solid rgba(222,255,10,0.2); }
+
+  .score-bar {
+    height: 3px;
+    background: var(--gray2);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    background: var(--yellow);
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  /* PROTOCOL */
+  .result-protocol {
+    padding: 24px 32px;
+  }
+
+  .protocol-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .protocol-content {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #CCC;
+    font-weight: 300;
+  }
+
+  .protocol-content strong {
+    color: var(--yellow);
+    font-weight: 500;
+  }
+
+  .protocol-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--gray2);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .protocol-num {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--gray2);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  .protocol-item-body { flex: 1; }
+
+  .protocol-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .protocol-item-timing {
+    font-size: 11px;
+    color: var(--yellow);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .protocol-item-why {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .protocol-loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .protocol-spinner {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--gray2);
+    border-top-color: var(--yellow);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .result-footer {
+    padding: 0 32px 60px;
+    margin-top: 8px;
+  }
+
+  .btn-restart {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--gray2);
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-restart:hover { border-color: var(--muted); color: var(--white); }
+
+  /* ERROR */
+  .error-box {
+    padding: 16px;
+    background: #1A0A0A;
+    border: 1px solid #FF4444;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #FF8888;
+    line-height: 1.5;
+    display: none;
+  }
+
+  /* DECORATIVE */
+  .deco-line {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--yellow), transparent);
+    opacity: 0.3;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- WELCOME -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome-top">
+      <div class="welcome-logo">WEALTH<span>NESS</span></div>
+      <div class="welcome-tagline">Beauty × Biohacking × Longevidade</div>
+      <div style="margin-top:16px;margin-bottom:40px;">
+        <p style="font-size:13px;color:#666;font-weight:300;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px;">7 perguntas.</p>
+        <p style="font-size:16px;color:#999;font-weight:300;margin:0 0 12px;">Seu diagnóstico biológico revelado.</p>
+        <p style="font-size:13px;color:#555;font-weight:300;margin:0;">Rosto definido · Corpo eficiente · Longevidade construída.</p>
+      </div>
+    </div>
+    <div class="welcome-strip">
+      <div>
+        <div class="welcome-strip-text">SEU PROTOCOLO<br>PERSONALIZADO</div>
+        <div class="welcome-strip-sub">Powered by AI · 2 minutos</div>
+      </div>
+      <button class="btn-start" onclick="startOnboarding()">INICIAR →</button>
+    </div>
+  </div>
+
+  <!-- STEP 0: PERFIL (gênero + idade numa tela) -->
+  <div class="screen" id="screen-0">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:14%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Perfil · 1 de 7</div>
+      <div class="question-title">SOBRE VOCÊ</div>
+      <div class="question-sub">Sua biologia determina o protocolo.</div>
+
+      <div style="font-size:10px;letter-spacing:2px;color:#666;text-transform:uppercase;margin-bottom:10px;">VOCÊ É</div>
+      <div class="options" id="opts-0" style="flex-direction:row;gap:10px;margin-bottom:28px;">
+        <button class="option" style="flex:1;justify-content:center;" onclick="selectGender('female',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Mulher</button>
+        <button class="option" style="flex:1;justify-content:center;" onclick="selectGender('male',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Homem</button>
+      </div>
+
+      <div style="font-size:10px;letter-spacing:2px;color:#666;text-transform:uppercase;margin-bottom:10px;">FAIXA ETÁRIA</div>
+      <div class="options" id="opts-age">
+        <button class="option" onclick="selectAge('<25',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Menos de 25</button>
+        <button class="option" onclick="selectAge('25-34',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>25 – 34</button>
+        <button class="option" onclick="selectAge('35-44',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>35 – 44</button>
+        <button class="option" onclick="selectAge('45-54',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>45 – 54</button>
+        <button class="option" onclick="selectAge('55+',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>55 ou mais</button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-0" disabled onclick="nextScreen(1)">CONTINUAR</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: VISUAL GOALS -->
+  <div class="screen" id="screen-1">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:36%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Objetivos · 2 de 7</div>
+      <div class="question-title">O QUE VOCÊ QUER MELHORAR?</div>
+      <div class="question-sub">Selecione até 2 opções.</div>
+      <div class="multi-hint">MÚLTIPLA ESCOLHA</div>
+      <div class="options" id="opts-1">
+        <button class="option" onclick="selectMulti(1,'pele',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Pele (rugas, flacidez, poros)</button>
+        <button class="option" onclick="selectMulti(1,'rosto',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Rosto (inchaço, contorno, definição)</button>
+        <button class="option" onclick="selectMulti(1,'gordura',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Gordura corporal</button>
+        <button class="option" onclick="selectMulti(1,'muscular',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Definição muscular</button>
+        <button class="option" onclick="selectMulti(1,'cabelo',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Cabelo (queda, afinamento, brancos)</button>
+        <button class="option" onclick="selectMulti(1,'glow',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Otimização total</button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-1" disabled onclick="nextScreen(2)">CONTINUAR</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: MAIN PROBLEM -->
+  <div class="screen" id="screen-2">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Diagnóstico · 3 de 7</div>
+      <div class="question-title">O QUE MAIS TE INCOMODA HOJE?</div>
+      <div class="question-sub">Selecione até 2 opções.</div>
+      <div class="multi-hint">MÚLTIPLA ESCOLHA</div>
+      <div class="options" id="opts-2">
+        <button class="option" onclick="selectMulti(2,'rosto_inchado',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Rosto inchado</button>
+        <button class="option" onclick="selectMulti(2,'inflamacao_pele',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Inflamação da pele (acne, sensibilidade)</button>
+        <button class="option" onclick="selectMulti(2,'gordura_localizada',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Gordura localizada</button>
+        <button class="option" onclick="selectMulti(2,'falta_definicao',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Falta de definição</button>
+        <button class="option" onclick="selectMulti(2,'corpo_sem_firmeza',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Corpo sem firmeza</button>
+        <button class="option" onclick="selectMulti(2,'pele_sem_brilho',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Pele sem brilho ou viço</button>
+        <button class="option" onclick="selectMulti(2,'aparencia_cansada',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Aparência cansada</button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-2" disabled onclick="nextScreen(3)">CONTINUAR</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: BODY PATTERN -->
+  <div class="screen" id="screen-3">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Padrão corporal · 4 de 7</div>
+      <div class="question-title">QUAL FRASE DESCREVE SEU CORPO?</div>
+      <div class="question-sub">Selecione até 2 opções.</div>
+      <div class="multi-hint">MÚLTIPLA ESCOLHA</div>
+      <div class="options" id="opts-3">
+        <button class="option" onclick="selectMulti(3,'dificuldade_perder',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Dificuldade para perder gordura</button>
+        <button class="option" onclick="selectMulti(3,'retencao',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Retenção frequente</button>
+        <button class="option" onclick="selectMulti(3,'dificuldade_definir',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Dificuldade em definir o corpo</button>
+        <button class="option" onclick="selectMulti(3,'nao_responde',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Meu corpo não responde como deveria</button>
+        <button class="option" onclick="selectMulti(3,'perco_resultado',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Perco resultado com facilidade</button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-3" disabled onclick="nextScreen(4)">CONTINUAR</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: INTERNAL PATTERN -->
+  <div class="screen" id="screen-4">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:74%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Sinais internos · 5 de 7</div>
+      <div class="question-title">COMO VOCÊ SE SENTE POR DENTRO?</div>
+      <div class="question-sub">Selecione até 2 situações.</div>
+      <div class="multi-hint">MÚLTIPLA ESCOLHA</div>
+      <div class="options" id="opts-4">
+        <button class="option" onclick="selectMulti(4,'energia_instavel',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Energia instável ao longo do dia</button>
+        <button class="option" onclick="selectMulti(4,'cansaco_dormindo',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Cansaço mesmo após dormir</button>
+        <button class="option" onclick="selectMulti(4,'incha_facil',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Incho com facilidade</button>
+        <button class="option" onclick="selectMulti(4,'desejo_acucar',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Desejo frequente por açúcar</button>
+        <button class="option" onclick="selectMulti(4,'sono_leve',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Sono leve ou pouco reparador</button>
+        <button class="option" onclick="selectMulti(4,'baixa_energia',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Baixa energia ou libido</button>
+        <button class="option" onclick="selectMulti(4,'hormonal',this,2)"><span class="option-dot"><span class="option-dot-inner"></span></span>Sintomas que variam em ciclos</button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-4" disabled onclick="nextScreen(5)">CONTINUAR</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: BIOHACKING -->
+  <div class="screen" id="screen-5">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Biohacking · 6 de 7</div>
+      <div class="question-title">ATÉ ONDE VOCÊ QUER IR?</div>
+      <div class="question-sub">Cada nível inclui o anterior. Escolha o seu ponto de partida.</div>
+      <div class="options" id="opts-5" style="gap:0;border:1px solid #2A2A2A;border-radius:4px;overflow:hidden;">
+        <button class="option" style="border-radius:0;border-bottom:1px solid #2A2A2A;" onclick="selectSingle(5,'base',this)">
+          <span class="option-dot"><span class="option-dot-inner"></span></span>
+          <span>
+            <span style="display:block;font-size:13px;font-weight:500;">Fundamentos essenciais</span>
+            <span style="display:block;font-size:11px;color:#666;margin-top:2px;">água, sol, alimentação, sono, movimento leve</span>
+          </span>
+        </button>
+        <button class="option" style="border-radius:0;border-bottom:1px solid #2A2A2A;" onclick="selectSingle(5,'metabolico',this)">
+          <span class="option-dot"><span class="option-dot-inner"></span></span>
+          <span>
+            <span style="display:block;font-size:13px;font-weight:500;">+ Otimização metabólica</span>
+            <span style="display:block;font-size:11px;color:#666;margin-top:2px;">jejum, timing alimentar, micronutrientes</span>
+          </span>
+        </button>
+        <button class="option" style="border-radius:0;" onclick="selectSingle(5,'avancado',this)">
+          <span class="option-dot"><span class="option-dot-inner"></span></span>
+          <span>
+            <span style="display:block;font-size:13px;font-weight:500;">+ Biohacking avançado</span>
+            <span style="display:block;font-size:11px;color:#666;margin-top:2px;">sauna, luz vermelha, dispositivos de pele, peptídeos</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-5" disabled onclick="nextScreen(6)">CONTINUAR</button>
+    </div>
+  </div>
+
+  <!-- STEP 6: OPENNESS -->
+  <div class="screen" id="screen-6">
+    <div class="screen-header">
+      <div class="logo">WEALTHNESS</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+    <div class="screen-body">
+      <div class="step-label">Execução · 7 de 7</div>
+      <div class="question-title">SEU NÍVEL DE ABERTURA:</div>
+      <div class="question-sub">Isso define a complexidade do protocolo.</div>
+      <div class="options" id="opts-6">
+        <button class="option" onclick="selectSingle(6,'basico',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Prefiro o básico</button>
+        <button class="option" onclick="selectSingle(6,'avancado',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Aberta a avançado</button>
+        <button class="option" onclick="selectSingle(6,'acelerar',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Quero acelerar resultados</button>
+        <button class="option" onclick="selectSingle(6,'dificuldade_rotina',this)"><span class="option-dot"><span class="option-dot-inner"></span></span>Tenho dificuldade em manter uma rotina</button>
+      </div>
+    </div>
+    <div class="screen-footer">
+      <button class="btn-primary" id="btn-6" disabled onclick="buildProtocol()">GERAR MEU PROTOCOLO</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-ring"></div>
+    <div class="loading-title">ANALISANDO</div>
+    <div class="loading-status" id="loading-status">Identificando sua biologia...</div>
+    <div class="loading-tags">
+      <span class="loading-tag" id="tag-bio">Biologia</span>
+      <span class="loading-tag" id="tag-corpo">Corpo</span>
+      <span class="loading-tag" id="tag-aparencia">Aparência</span>
+      <span class="loading-tag" id="tag-hormonal">Sinal Hormonal</span>
+      <span class="loading-tag" id="tag-stress">Amplificador</span>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="result-header">
+      <div class="logo">WEALTHNESS</div>
+      <br>
+      <div class="result-archetype-label">SEU ARQUÉTIPO</div>
+      <div class="result-archetype-name" id="result-name">—</div>
+      <div class="result-motor" id="result-motor">—</div>
+    </div>
+
+    <div class="result-scores" id="result-scores"></div>
+
+    <div class="result-protocol">
+      <div class="protocol-title">PROTOCOLO PERSONALIZADO</div>
+      <div id="protocol-output">
+        <div class="protocol-loading">
+          <div class="protocol-spinner"></div>
+          <span>Gerando seu protocolo com IA...</span>
+        </div>
+      </div>
+      <div class="error-box" id="error-box"></div>
+    </div>
+
+    <!-- PAID LAYER -->
+    <div id="paid-layer" style="display:none;margin:0 32px 8px;">
+      <div style="padding:24px;background:#0F0F0F;border:1px solid #2A2A2A;border-radius:4px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,#DEFF0A,transparent);"></div>
+        <div style="font-size:10px;letter-spacing:3px;color:#DEFF0A;text-transform:uppercase;margin-bottom:10px;">PROTOCOLO AVANÇADO</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#F5F5F0;letter-spacing:1px;margin-bottom:8px;">SEU PROTOCOLO COMPLETO</div>
+        <div style="font-size:13px;color:#666;line-height:1.6;font-weight:300;margin-bottom:20px;">Um sistema personalizado para transformar o problema raiz identificado no seu diagnóstico.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:#555;">
+            <span style="color:#DEFF0A;">—</span>Ferramentas avançadas específicas para seu arquétipo
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:#555;">
+            <span style="color:#DEFF0A;">—</span>Peptídeos, aparelhos, cold plunge, sauna — o que realmente move o ponteiro
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:#555;">
+            <span style="color:#DEFF0A;">—</span>Micronutrientes avançados com dosagem e ciclo completo
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:#555;">
+            <span style="color:#DEFF0A;">—</span>Baseado em evidência científica, calibrado para sua biologia
+          </div>
+        </div>
+        <button onclick="unlockProtocol()" style="width:100%;padding:16px;background:#DEFF0A;color:#0A0A0A;border:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;border-radius:2px;transition:all 0.2s;">
+          DESBLOQUEAR PROTOCOLO COMPLETO
+        </button>
+      </div>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div style="padding:16px 32px 8px;">
+      <p style="font-size:10px;color:#333;line-height:1.6;font-weight:300;text-align:center;">
+        As informações fornecidas pelo Wealthness são apenas para fins educacionais e de conhecimento geral. Não constituem aconselhamento médico, diagnóstico ou tratamento. Consulte um profissional de saúde qualificado antes de iniciar qualquer protocolo.
+      </p>
+    </div>
+
+    <div class="result-footer">
+      <button class="btn-restart" onclick="restartApp()">↩ REFAZER DIAGNÓSTICO</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const answers = {};
+
+// ─── SCORING TABLES ──────────────────────────────────────────────────────────
+const scoring = {
+  senescencia: {
+    tela1: { pele:3, rosto:1, gordura:1, muscular:0, cabelo:3, glow:2 },
+    tela2: { rosto_inchado:1, inflamacao_pele:2, gordura_localizada:1, falta_definicao:0, corpo_sem_firmeza:3, pele_sem_brilho:3, aparencia_cansada:1 },
+    tela3: { dificuldade_perder:1, retencao:2, dificuldade_definir:1, nao_responde:2, perco_resultado:1 },
+    tela4: { energia_instavel:1, cansaco_dormindo:1, incha_facil:1, desejo_acucar:1, sono_leve:0, baixa_energia:2, hormonal:3 },
+    tela5: { base:1, metabolico:1, avancado:2 },
+    tela6: { basico:1, avancado:2, acelerar:2, dificuldade_rotina:1 }
+  },
+  microbioma: {
+    tela1: { pele:1, rosto:3, gordura:2, muscular:1, cabelo:1, glow:2 },
+    tela2: { rosto_inchado:3, inflamacao_pele:2, gordura_localizada:3, falta_definicao:1, corpo_sem_firmeza:1, pele_sem_brilho:1, aparencia_cansada:1 },
+    tela3: { dificuldade_perder:3, retencao:2, dificuldade_definir:1, nao_responde:2, perco_resultado:1 },
+    tela4: { energia_instavel:1, cansaco_dormindo:1, incha_facil:3, desejo_acucar:3, sono_leve:1, baixa_energia:1, hormonal:2 },
+    tela5: { base:2, metabolico:3, avancado:1 },
+    tela6: { basico:1, avancado:2, acelerar:2, dificuldade_rotina:2 }
+  },
+  ambiental: {
+    tela1: { pele:2, rosto:1, gordura:0, muscular:0, cabelo:2, glow:2 },
+    tela2: { rosto_inchado:1, inflamacao_pele:3, gordura_localizada:1, falta_definicao:0, corpo_sem_firmeza:1, pele_sem_brilho:2, aparencia_cansada:1 },
+    tela3: { dificuldade_perder:1, retencao:2, dificuldade_definir:0, nao_responde:2, perco_resultado:1 },
+    tela4: { energia_instavel:1, cansaco_dormindo:0, incha_facil:2, desejo_acucar:1, sono_leve:1, baixa_energia:1, hormonal:1 },
+    tela5: { base:1, metabolico:1, avancado:3 },
+    tela6: { basico:1, avancado:2, acelerar:3, dificuldade_rotina:1 }
+  },
+  neuro: {
+    tela1: { pele:0, rosto:1, gordura:2, muscular:3, cabelo:0, glow:1 },
+    tela2: { rosto_inchado:1, inflamacao_pele:1, gordura_localizada:1, falta_definicao:3, corpo_sem_firmeza:1, pele_sem_brilho:1, aparencia_cansada:3 },
+    tela3: { dificuldade_perder:1, retencao:1, dificuldade_definir:3, nao_responde:2, perco_resultado:3 },
+    tela4: { energia_instavel:3, cansaco_dormindo:3, incha_facil:1, desejo_acucar:2, sono_leve:3, baixa_energia:3, hormonal:2 },
+    tela5: { base:2, metabolico:1, avancado:1 },
+    tela6: { basico:1, avancado:2, acelerar:2, dificuldade_rotina:2 }
+  }
+};
+
+const ageFactor = { '<25':1.0, '25-34':1.2, '35-44':1.5, '45-54':1.8, '55+':2.2 };
+
+// ─── ARCHETYPE LOGIC ─────────────────────────────────────────────────────────
+function getArchetype(scores) {
+  const { senescencia: s, microbioma: m, ambiental: a, neuro: n } = scores;
+  const max = Math.max(s, m, a, n);
+  const threshold = max * 0.85;
+
+  const dominant = [];
+  if (s >= threshold) dominant.push('senescencia');
+  if (m >= threshold) dominant.push('microbioma');
+  if (a >= threshold) dominant.push('ambiental');
+  if (n >= threshold) dominant.push('neuro');
+
+  if (dominant.length === 1) {
+    const d = dominant[0];
+    if (d === 'senescencia') return { id:1, name:'PELE LONGAVIDADE', motor:'Senescência / Inflammaging', causa:'Colágeno ↓1%/ano + IL-6 crônica', tipo:'Reconstrutivo' };
+    if (d === 'microbioma')  return { id:2, name:'CORPO RETIDO', motor:'Microbioma / Gut-inflamação', causa:'Disbiose + LPS leakage', tipo:'Reset intestinal' };
+    if (d === 'ambiental')   return { id:3, name:'GLOW BLOCKED', motor:'Exposição ambiental', causa:'PM2.5 + luz azul + UV acumulado', tipo:'Detox cutâneo' };
+    if (d === 'neuro')       return { id:4, name:'ENERGIA PRESO', motor:'Neuroinflamação / Sistema nervoso', causa:'Cortisol ↑ + IL-1β bloqueia lipólise', tipo:'Neuro-recuperação' };
+  }
+
+  if (dominant.includes('senescencia') && dominant.includes('microbioma'))
+    return { id:5, name:'PELE + CORPO', motor:'Senescência + Microbioma', causa:'Inflammaging duplo (pele + gut-skin axis)', tipo:'Duplo' };
+  if (dominant.includes('microbioma') && dominant.includes('neuro'))
+    return { id:6, name:'CORPO + ENERGIA', motor:'Microbioma + Neuroinflamação', causa:'Disbiose + eixo HPA desregulado', tipo:'Sinérgico' };
+
+  return { id:7, name:'SISTEMA SOBRECARREGADO', motor:'Todos os motores moderados', causa:'Estresse ambiental crônico múltiplo', tipo:'Base equilibrada' };
+}
+
+// ─── SCORE CALCULATION ───────────────────────────────────────────────────────
+function calculateScores() {
+  const age = answers['age'];
+  const af = ageFactor[age] || 1.0;
+  const scores = {};
+
+  for (const [motor, tables] of Object.entries(scoring)) {
+    let total = 0;
+
+    // tela1 - multi select
+    const t1 = answers[1] || [];
+    for (const v of t1) total += (tables.tela1[v] || 0);
+
+    // tela2 - now multi select
+    const t2 = Array.isArray(answers[2]) ? answers[2] : (answers[2] ? [answers[2]] : []);
+    for (const v of t2) total += (tables.tela2[v] || 0);
+
+    // tela3 - now multi select
+    const t3 = Array.isArray(answers[3]) ? answers[3] : (answers[3] ? [answers[3]] : []);
+    for (const v of t3) total += (tables.tela3[v] || 0);
+
+    // tela4 - multi select
+    const t4 = answers[4] || [];
+    for (const v of t4) total += (tables.tela4[v] || 0);
+
+    // tela5 - single
+    const t5 = answers[5];
+    if (t5) total += (tables.tela5[t5] || 0);
+
+    // tela6 - single
+    const t6 = answers[6];
+    if (t6) total += (tables.tela6[t6] || 0);
+
+    // Apply age factor to senescencia and microbioma
+    if (motor === 'senescencia' || motor === 'microbioma') total *= af;
+
+    scores[motor] = Math.round(total * 10) / 10;
+  }
+
+  return scores;
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startOnboarding() { showScreen('screen-0'); }
+
+function nextScreen(n) { showScreen('screen-' + n); }
+
+function restartApp() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.btn-primary').forEach(b => b.disabled = true);
+  document.getElementById('protocol-output').innerHTML = '';
+  document.getElementById('error-box').style.display = 'none';
+  showScreen('screen-welcome');
+}
+
+// ─── SELECTION HELPERS ───────────────────────────────────────────────────────
+function selectGender(value, el) {
+  answers[0] = value;
+  document.querySelectorAll('#opts-0 .option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  checkProfileComplete();
+}
+
+function selectAge(value, el) {
+  answers['age'] = value;
+  document.querySelectorAll('#opts-age .option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  checkProfileComplete();
+}
+
+function checkProfileComplete() {
+  document.getElementById('btn-0').disabled = !(answers[0] && answers['age']);
+}
+
+function selectSingle(step, value, el) {
+  answers[step] = value;
+  document.querySelectorAll(`#opts-${step} .option`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btn-' + step).disabled = false;
+}
+
+function selectMulti(step, value, el, maxSelect) {
+  if (!answers[step]) answers[step] = [];
+  const arr = answers[step];
+  const idx = arr.indexOf(value);
+
+  if (idx > -1) {
+    arr.splice(idx, 1);
+    el.classList.remove('selected');
+  } else {
+    if (arr.length >= maxSelect) {
+      // deselect first
+      const firstSelected = document.querySelector(`#opts-${step} .option.selected`);
+      if (firstSelected) {
+        const firstVal = firstSelected.getAttribute('onclick').match(/'([^']+)',this/)?.[1];
+        if (firstVal) arr.splice(arr.indexOf(firstVal), 1);
+        firstSelected.classList.remove('selected');
+      }
+    }
+    arr.push(value);
+    el.classList.add('selected');
+  }
+
+  document.getElementById('btn-' + step).disabled = arr.length === 0;
+}
+
+// ─── BUILD PROTOCOL ───────────────────────────────────────────────────────────
+async function buildProtocol() {
+  // Show loading
+  showScreen('screen-loading');
+  animateLoading();
+
+  // Calculate scores
+  const scores = calculateScores();
+  const archetype = getArchetype(scores);
+  _cachedScores = scores;
+  _cachedArchetype = archetype;
+
+  // Brief delay for UX
+  await new Promise(r => setTimeout(r, 2800));
+
+  // Show result header immediately
+  showScreen('screen-result');
+  document.getElementById('result-name').textContent = archetype.name;
+  document.getElementById('result-motor').textContent = archetype.motor;
+
+  // Render score cards
+  renderScoreCards(scores, archetype);
+
+  // Call LLM for protocol
+  await generateProtocol(scores, archetype);
+}
+
+function renderScoreCards(scores, archetype) {
+  const maxScore = Math.max(...Object.values(scores));
+  const labels = { senescencia:'Senescência', microbioma:'Microbioma', ambiental:'Ambiental', neuro:'Neuroinflamação' };
+  const container = document.getElementById('result-scores');
+  container.innerHTML = '';
+
+  for (const [k, v] of Object.entries(scores)) {
+    const isDominant = archetype.motor.toLowerCase().includes(k) || 
+                       (k === 'senescencia' && archetype.motor.includes('Senescência')) ||
+                       (k === 'microbioma' && archetype.motor.includes('Microbioma')) ||
+                       (k === 'ambiental' && archetype.motor.includes('ambiental')) ||
+                       (k === 'neuro' && archetype.motor.includes('Neuro'));
+    const pct = Math.round((v / maxScore) * 100);
+    container.innerHTML += `
+      <div class="score-card ${isDominant ? 'dominant' : ''}">
+        <div class="score-card-label">${labels[k]}</div>
+        <div class="score-card-value">${v}</div>
+        <div class="score-bar"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  }
+}
+
+async function generateProtocol(scores, archetype) {
+  const lowConsistency = answers[6] === 'dificuldade_rotina';
+  const age = answers['age'];
+  const gender = answers[0] === 'female' ? 'Feminino' : 'Masculino';
+  const genderContext = answers[0] === 'female'
+    ? 'Biologia feminina: considere ciclo hormonal, estrogênio, progesterona, saúde adrenal, eixo HPG. Peptídeos e suplementos devem ser calibrados para fisiologia feminina.'
+    : 'Biologia masculina: considere testosterona, DHT, saúde adrenal, eixo HPG masculino. Peptídeos e suplementos devem ser calibrados para fisiologia masculina.';
+
+  // Map raw answer keys to readable labels for the prompt
+  const goalLabels = { pele:'Pele (rugas, flacidez, poros)', rosto:'Rosto (inchaço, contorno, definição)', gordura:'Gordura corporal', muscular:'Definição muscular', cabelo:'Cabelo (queda, afinamento, brancos)', glow:'Otimização total' };
+  const problemLabels = { rosto_inchado:'Rosto inchado', inflamacao_pele:'Inflamação da pele / acne / sensibilidade', gordura_localizada:'Gordura localizada', falta_definicao:'Falta de definição', corpo_sem_firmeza:'Corpo sem firmeza', pele_sem_brilho:'Pele sem brilho ou viço', aparencia_cansada:'Aparência cansada' };
+  const bodyLabels = { dificuldade_perder:'Dificuldade para perder gordura', retencao:'Retenção frequente', dificuldade_definir:'Dificuldade em definir o corpo', nao_responde:'Meu corpo não responde como deveria', perco_resultado:'Perco resultado com facilidade' };
+  const internalLabels = { energia_instavel:'Energia instável ao longo do dia', cansaco_dormindo:'Cansaço mesmo após dormir', incha_facil:'Incho com facilidade', desejo_acucar:'Desejo frequente por açúcar', sono_leve:'Sono leve ou pouco reparador', baixa_energia:'Baixa energia ou libido', hormonal:'Sintomas que variam em ciclos (hormonal)' };
+  const biohackLabels = { base:'Base: alimentação e sono', metabolico:'Otimização metabólica', avancado:'Ferramentas avançadas de biohacking' };
+  const opennessLabels = { basico:'Prefiro o básico', avancado:'Aberta a avançado', acelerar:'Quero acelerar resultados', dificuldade_rotina:'Tenho dificuldade em manter rotina' };
+
+  const goals = (answers[1] || []).map(v => goalLabels[v] || v).join(', ');
+  const problem = (Array.isArray(answers[2]) ? answers[2] : [answers[2]]).filter(Boolean).map(v => problemLabels[v] || v).join(', ');
+  const bodyPattern = (Array.isArray(answers[3]) ? answers[3] : [answers[3]]).filter(Boolean).map(v => bodyLabels[v] || v).join(', ');
+  const internalSignals = (answers[4] || []).map(v => internalLabels[v] || v).join(', ');
+  const biohack = biohackLabels[answers[5]] || answers[5];
+  const openness = opennessLabels[answers[6]] || answers[6];
+
+  const isAdvanced = answers[5] === 'avancado' || answers[6] === 'acelerar';
+
+  const camadaBasica = `CAMADA 1 — BIOHACKING BÁSICO (alimentação, água, sono, luz, movimento)
+Exemplos: janela alimentar, hidratação com eletrólitos, 8h sono, sol matinal, caminhada`;
+
+  const camadaMicro = `CAMADA 2 — MICRONUTRIENTES (suplemento específico com dosagem, timing e duração do ciclo)
+Exemplos: "Colágeno tipo I/III 10g — manhã em jejum — ciclo 90 dias", "Magnésio glicinato 400mg — noite — uso contínuo"`;
+
+  const camadaAvancada = isAdvanced ? `CAMADA 3 — BIOHACKING AVANÇADO (ferramentas e tecnologia)
+Exemplos: red light therapy, sauna, cold exposure, dispositivos de pele, jejum intermitente avançado` : '';
+
+  const camadaPeptideos = isAdvanced ? `CAMADA 4 — PEPTÍDEOS (nome do peptídeo, dose, protocolo, objetivo)
+Exemplos: BPC-157, GHK-Cu, Epitalon, TB-500 — inclua dose, frequência e por que para o arquétipo dela` : '';
+
+  const prompt = `Você é o sistema Wealthness — plataforma premium de beleza e biohacking.
+
+PERFIL DA USUÁRIA:
+- Gênero: ${gender}
+- Faixa etária: ${age}
+- Objetivos visuais: ${goals}
+- Principal queixa: ${problem}
+- Padrão corporal: ${bodyPattern}
+- Sinais internos: ${internalSignals}
+- Nível de biohacking: ${biohack}
+- Abertura: ${openness}
+
+CONTEXTO BIOLÓGICO: ${genderContext}
+
+DIAGNÓSTICO:
+- Arquétipo: ${archetype.name}
+- Motor dominante: ${archetype.motor}
+- Causa raiz: ${archetype.causa}
+- Tipo: ${archetype.tipo}
+
+Scores (após multiplicador de idade):
+- Senescência: ${scores.senescencia} | Microbioma: ${scores.microbioma} | Ambiental: ${scores.ambiental} | Neuro: ${scores.neuro}
+
+CAMADAS DISPONÍVEIS PARA ESTE PERFIL:
+${camadaBasica}
+${camadaMicro}
+${camadaAvancada}
+${camadaPeptideos}
+
+INSTRUÇÕES:
+- Gere EXATAMENTE 5 itens no total, distribuídos pelas camadas disponíveis
+- Escolha as camadas mais relevantes para o arquétipo e queixas dela
+- ${isAdvanced ? 'Inclua pelo menos 1 item de Biohacking Avançado e 1 de Peptídeos' : 'Foque em Biohacking Básico e Micronutrientes'}
+- Cada item deve ter nome ESPECÍFICO (ex: "Colágeno tipo I/III + vitamina C" não apenas "colágeno")
+- Micronutrientes: sempre inclua dosagem exata, timing e duração do ciclo
+- Peptídeos (se avançado): inclua dose, via e frequência
+- Calibre para faixa etária ${age} e queixa principal: ${problem}
+- O "por_que" deve ser UMA frase curta e direta — máximo 12 palavras. O que muda na prática. Sem explicação científica.
+- ORDENAÇÃO POR PROGRESSÃO: ordene os 5 itens do mais simples/fundamental para o mais avançado. Comece sempre pelos fundamentos (Biohacking Básico), depois Micronutrientes, depois Avançado e Peptídeos por último. Dentro de cada categoria, coloque primeiro o de maior impacto. Atribua a cada item um campo "impacto" de 1 a 5 (5 = máximo impacto para este perfil).
+
+Formato EXATO — retorne APENAS JSON sem markdown:
+{
+  "causa_raiz": "1-2 frases em linguagem simples explicando o que está acontecendo no corpo desta pessoa e por que está causando os sintomas que ela relatou. Segunda pessoa, sem jargão. Ex: 'Seu intestino está inflamado e isso está bloqueando sua capacidade de perder gordura e causar inchaço. Não é falta de esforço — é biologia.'",
+  "acoes": [
+    {
+      "categoria": "Biohacking Básico",
+      "nome": "Nome específico da ação",
+      "timing": "quando/como fazer",
+      "por_que": "explicação em linguagem simples do que muda no corpo ou aparência",
+      "ciclo": "ex: uso contínuo / ciclo 90 dias / 3x semana",
+      "impacto": 5
+    }
+  ]
+}
+
+Categorias válidas: "Biohacking Básico", "Micronutrientes", "Biohacking Avançado", "Peptídeos"
+Ordene: Básico → Micronutrientes → Avançado → Peptídeos. O item com impacto 5 deve vir por ÚLTIMO.`;
+
+  try {
+    const res = await fetch('/api/protocol', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || '').join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    renderProtocol(parsed, archetype);
+  } catch (err) {
+    document.getElementById('protocol-output').innerHTML = '';
+    const errBox = document.getElementById('error-box');
+    errBox.style.display = 'block';
+    errBox.textContent = 'Erro ao gerar protocolo. Tente novamente.';
+    console.error(err);
+  }
+}
+
+function renderProtocol(data, archetype) {
+  const catColors = {
+    'Biohacking Básico':    { bg:'#0A1A0A', border:'rgba(100,200,100,0.3)', dot:'#4CAF50', label:'🌱' },
+    'Micronutrientes':      { bg:'#0A0A1A', border:'rgba(100,140,255,0.3)', dot:'#6B8FFF', label:'💊' },
+    'Biohacking Avançado':  { bg:'#1A1A00', border:'rgba(222,255,10,0.3)',  dot:'#DEFF0A', label:'⚡' },
+    'Peptídeos':            { bg:'#1A0A1A', border:'rgba(200,100,255,0.3)', dot:'#C064FF', label:'🔬' },
+  };
+
+  let html = '';
+
+  if (data.causa_raiz) {
+    html += `<div style="padding:16px 0 20px;border-bottom:1px solid #2A2A2A;margin-bottom:8px;">
+      <div style="font-size:10px;letter-spacing:2px;color:#666;margin-bottom:8px;">CAUSA RAIZ IDENTIFICADA</div>
+      <div style="font-size:14px;color:#CCC;line-height:1.6;font-weight:300;">${data.causa_raiz}</div>
+    </div>`;
+  }
+
+  const total = (data.acoes || []).length;
+  const FREE_LIMIT = 3;
+
+  (data.acoes || []).forEach((a, i) => {
+    const cat = catColors[a.categoria] || catColors['Biohacking Básico'];
+    const isTop = i === FREE_LIMIT - 1; // last free item gets the highlight
+    const isLocked = i >= FREE_LIMIT;
+    const impacto = a.impacto || (i + 1);
+
+    // Impact dots
+    const dots = Array.from({length: 5}, (_, d) =>
+      `<span style="width:6px;height:6px;border-radius:50%;background:${d < impacto ? '#DEFF0A' : '#2A2A2A'};display:inline-block;"></span>`
+    ).join('');
+
+    const topBadge = isTop
+      ? `<div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;background:#1A1A00;border:1px solid #DEFF0A;margin-bottom:10px;">
+          <span style="font-size:9px;color:#DEFF0A;letter-spacing:2px;text-transform:uppercase;">★ Maior impacto</span>
+        </div><br>`
+      : '';
+
+    if (isLocked) {
+      // Blurred/locked teaser item
+      html += `
+      <div style="padding:16px 0;border-bottom:1px solid #1E1E1E;display:flex;gap:14px;align-items:flex-start;filter:blur(4px);pointer-events:none;user-select:none;opacity:0.5;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#2A2A2A;line-height:1;flex-shrink:0;width:28px;">${String(i+1).padStart(2,'0')}</div>
+        <div style="flex:1;">
+          <div style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:100px;background:${cat.bg};border:1px solid ${cat.border};margin-bottom:8px;">
+            <span style="font-size:10px;">${cat.label}</span>
+            <span style="font-size:9px;letter-spacing:1.5px;color:${cat.dot};text-transform:uppercase;">${a.categoria}</span>
+          </div>
+          <div style="font-size:14px;font-weight:500;color:#F5F5F0;margin-bottom:4px;">${a.nome}</div>
+          <div style="font-size:11px;color:#DEFF0A;letter-spacing:1px;margin-bottom:4px;">${a.timing}</div>
+          <div style="font-size:12px;color:#888;line-height:1.5;font-weight:300;">${a.por_que}</div>
+        </div>
+      </div>`;
+      return;
+    }
+
+    const wrapStyle = isTop
+      ? `padding:16px;margin-bottom:8px;background:#111;border:1px solid rgba(222,255,10,0.15);border-radius:4px;display:flex;gap:14px;align-items:flex-start;`
+      : `padding:16px 0;border-bottom:1px solid #1E1E1E;display:flex;gap:14px;align-items:flex-start;`;
+
+    html += `
+    <div style="${wrapStyle}">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:${isTop ? '#DEFF0A' : '#2A2A2A'};line-height:1;flex-shrink:0;width:28px;">${String(i+1).padStart(2,'0')}</div>
+      <div style="flex:1;">
+        ${topBadge}
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:100px;background:${cat.bg};border:1px solid ${cat.border};margin-bottom:8px;">
+          <span style="font-size:10px;">${cat.label}</span>
+          <span style="font-size:9px;letter-spacing:1.5px;color:${cat.dot};text-transform:uppercase;">${a.categoria}</span>
+        </div>
+        <div style="font-size:14px;font-weight:500;color:#F5F5F0;margin-bottom:4px;">${a.nome}</div>
+        <div style="font-size:11px;color:#DEFF0A;letter-spacing:1px;margin-bottom:4px;">${a.timing}</div>
+        ${a.ciclo ? `<div style="font-size:11px;color:#666;letter-spacing:1px;margin-bottom:6px;">🔄 ${a.ciclo}</div>` : ''}
+        <div style="font-size:12px;color:#888;line-height:1.5;font-weight:300;margin-bottom:10px;">${a.por_que}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:9px;letter-spacing:1px;color:#444;text-transform:uppercase;">Impacto</span>
+          <div style="display:flex;gap:3px;">${dots}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('protocol-output').innerHTML = html;
+  document.getElementById('paid-layer').style.display = 'block';
+}
+
+// ─── PAID LAYER ───────────────────────────────────────────────────────────────
+let _cachedScores = null;
+let _cachedArchetype = null;
+
+async function unlockProtocol() {
+  const btn = document.querySelector('#paid-layer button');
+  btn.textContent = 'GERANDO...';
+  btn.disabled = true;
+
+  const paidDiv = document.getElementById('paid-layer');
+  paidDiv.innerHTML = `
+    <div style="padding:24px 32px;">
+      <div style="font-size:10px;letter-spacing:3px;color:#DEFF0A;text-transform:uppercase;margin-bottom:12px;">PROTOCOLO AVANÇADO</div>
+      <div id="advanced-output">
+        <div style="display:flex;align-items:center;gap:12px;color:#555;font-size:13px;">
+          <div style="width:16px;height:16px;border:1.5px solid #2A2A2A;border-top-color:#DEFF0A;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;"></div>
+          <span>Gerando protocolo avançado personalizado...</span>
+        </div>
+      </div>
+    </div>`;
+
+  await generateAdvancedProtocol(_cachedScores, _cachedArchetype);
+}
+
+async function generateAdvancedProtocol(scores, archetype) {
+  const age = answers['age'];
+  const gender = answers[0] === 'female' ? 'Feminino' : 'Masculino';
+  const genderContext = answers[0] === 'female'
+    ? 'Biologia feminina: considere ciclo hormonal, estrogênio, progesterona. Peptídeos e dosagens calibrados para fisiologia feminina.'
+    : 'Biologia masculina: considere testosterona, DHT. Peptídeos e dosagens calibrados para fisiologia masculina.';
+
+  const goalLabels = { pele:'Pele', rosto:'Rosto', gordura:'Gordura corporal', muscular:'Definição muscular', cabelo:'Cabelo', glow:'Otimização total' };
+  const goals = (answers[1] || []).map(v => goalLabels[v] || v).join(', ');
+
+  const prompt = `Você é o sistema Wealthness de protocolos avançados de biohacking.
+
+PERFIL:
+- Gênero: ${gender} — ${genderContext}
+- Faixa etária: ${age}
+- Arquétipo: ${archetype.name}
+- Motor dominante: ${archetype.motor}
+- Causa raiz: ${archetype.causa}
+- Objetivos: ${goals}
+- Scores: Senescência ${scores.senescencia} | Microbioma ${scores.microbioma} | Ambiental ${scores.ambiental} | Neuro ${scores.neuro}
+
+DIRETRIZES DE SEGURANÇA — OBRIGATÓRIAS:
+- Use apenas peptídeos com evidência científica estabelecida em humanos
+- Indique sempre a dosagem mínima eficaz — nunca doses experimentais
+- Nunca sugira combinações sem estudos de segurança conhecidos
+- Indique via de administração (oral, subcutânea, tópica)
+- Inclua contraindicações relevantes para o perfil
+- Se não houver evidência suficiente para recomendar um peptídeo com segurança, não inclua
+
+INSTRUÇÕES:
+- Gere um protocolo avançado com EXATAMENTE 4 itens que juntos formam um SISTEMA completo para resolver o problema raiz desta pessoa
+- Os 4 itens devem ser complementares e cobrir dimensões diferentes: pode incluir peptídeos, aparelhos (sauna, red light, cold plunge, PEMF, microcorrente), micronutrientes avançados, protocolos de jejum/timing, práticas de recuperação — escolha o que for mais eficaz para ESTE arquétipo e perfil
+- Não force peptídeos se uma ferramenta de biohacking tiver mais impacto para este caso
+- Cada item deve ser o mais eficaz possível para o problema raiz: ${archetype.causa}
+- Pense como um especialista montando um sistema integrado, não uma lista aleatória
+- Linguagem simples e direta — sem jargão. O "por_que" deve ser UMA frase curta, máximo 12 palavras, dizendo o que muda na prática.
+- As contraindicações ("atencao") devem ser CURTAS e simples — máximo 1 frase. Refere-se APENAS a coisas externas: medicamentos, condições de saúde, situações como gravidez
+- Atribua a cada item um campo "impacto" de 1 a 5 (5 = o que vai gerar o resultado mais visível para ESTE perfil e problema raiz específico)
+
+Formato EXATO — retorne APENAS JSON sem markdown:
+{
+  "intro": "1-2 frases sobre o que está acontecendo no corpo e o que este protocolo vai fazer. Segunda pessoa, direto. Siga exatamente este tom: 'Seu sistema está sobrecarregado por inflamação crônica acumulada. Este protocolo ataca a causa diretamente.' — adapte para o problema raiz desta pessoa, nunca mencione gênero, idade ou perfil."
+  "itens": [
+    {
+      "tipo": "Peptídeo",
+      "nome": "Nome do peptídeo",
+      "dose": "dose e via",
+      "timing": "quando/como",
+      "ciclo": "duração + pausa + reavaliação",
+      "por_que": "o que muda na prática para esta pessoa",
+      "atencao": "o que evitar fora deste protocolo — medicamentos, condições ou situações específicas",
+      "impacto": 5
+    }
+  ]
+}
+
+Tipos válidos: "Peptídeo", "Micronutrientes Avançados", "Biohacking Avançado", "Recuperação", "Protocolo Metabólico"`;
+
+  try {
+    const res = await fetch('/api/protocol', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || '').join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    renderAdvancedProtocol(parsed);
+  } catch (err) {
+    document.getElementById('advanced-output').innerHTML =
+      `<p style="font-size:13px;color:#FF6666;">Erro ao gerar protocolo avançado. Tente novamente.</p>`;
+    console.error(err);
+  }
+}
+
+function renderAdvancedProtocol(data) {
+  const typeColors = {
+    'Peptídeo':                 { bg:'#1A0A1A', border:'rgba(200,100,255,0.3)', dot:'#C064FF', label:'🔬' },
+    'Micronutrientes Avançados':{ bg:'#0A0A1A', border:'rgba(100,140,255,0.3)', dot:'#6B8FFF', label:'💊' },
+    'Biohacking Avançado':      { bg:'#1A1A00', border:'rgba(222,255,10,0.3)',  dot:'#DEFF0A', label:'⚡' },
+    'Recuperação':              { bg:'#0A1A1A', border:'rgba(100,220,200,0.3)', dot:'#40CDB0', label:'🌊' },
+    'Protocolo Metabólico':     { bg:'#1A0A0A', border:'rgba(255,140,80,0.3)', dot:'#FF8C50', label:'🔥' },
+  };
+
+  let html = `<div style="font-size:10px;letter-spacing:3px;color:#DEFF0A;text-transform:uppercase;margin-bottom:4px;">PROTOCOLO AVANÇADO</div>`;
+  html += `<div style="position:relative;margin-bottom:24px;"><div style="height:1px;background:linear-gradient(to right,#DEFF0A,transparent);"></div></div>`;
+
+  if (data.intro) {
+    html += `<div style="padding:0 0 20px;border-bottom:1px solid #2A2A2A;margin-bottom:8px;">
+      <div style="font-size:14px;color:#888;line-height:1.6;font-weight:300;font-style:italic;">${data.intro}</div>
+    </div>`;
+  }
+
+  const advTotal = (data.itens || []).length;
+  const maxImpacto = Math.max(...(data.itens || []).map(item => item.impacto || 0));
+  (data.itens || []).forEach((item, i) => {
+    const cat = typeColors[item.tipo] || typeColors['Peptídeo'];
+    const isTop = (item.impacto || 0) === maxImpacto;
+    const topBadge = isTop
+      ? `<div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;background:#1A1A00;border:1px solid #DEFF0A;margin-bottom:10px;">
+          <span style="font-size:9px;color:#DEFF0A;letter-spacing:2px;text-transform:uppercase;">★ Maior impacto</span>
+        </div><br>`
+      : '';
+    const wrapStyle = isTop
+      ? `padding:16px;margin-bottom:8px;background:#111;border:1px solid rgba(222,255,10,0.15);border-radius:4px;display:flex;gap:14px;align-items:flex-start;`
+      : `padding:16px 0;border-bottom:1px solid #1E1E1E;display:flex;gap:14px;align-items:flex-start;`;
+    html += `
+    <div style="${wrapStyle}">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:${isTop ? '#DEFF0A' : '#2A2A2A'};line-height:1;flex-shrink:0;width:28px;">${String(i+1).padStart(2,'0')}</div>
+      <div style="flex:1;">
+        ${topBadge}
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:100px;background:${cat.bg};border:1px solid ${cat.border};margin-bottom:8px;">
+          <span style="font-size:10px;">${cat.label}</span>
+          <span style="font-size:9px;letter-spacing:1.5px;color:${cat.dot};text-transform:uppercase;">${item.tipo}</span>
+        </div>
+        <div style="font-size:14px;font-weight:500;color:#F5F5F0;margin-bottom:4px;">${item.nome}</div>
+        ${item.dose ? `<div style="font-size:11px;color:#DEFF0A;letter-spacing:1px;margin-bottom:4px;">${item.dose}</div>` : ''}
+        <div style="font-size:11px;color:#666;letter-spacing:1px;margin-bottom:4px;">${item.timing}</div>
+        ${item.ciclo ? `<div style="font-size:11px;color:#555;letter-spacing:1px;margin-bottom:6px;">🔄 ${item.ciclo}</div>` : ''}
+        <div style="font-size:12px;color:#888;line-height:1.5;font-weight:300;margin-bottom:8px;">${item.por_que}</div>
+        ${item.atencao ? `<div style="font-size:11px;color:#4A3A1A;background:#1A1200;border:1px solid #3A2A00;border-radius:3px;padding:6px 10px;">⚠️ Atenção: ${item.atencao}</div>` : ''}
+      </div>
+    </div>`;
+  });
+
+  const container = document.getElementById('paid-layer');
+  container.innerHTML = `<div style="padding:0 32px 24px;">${html}</div>`;
+}
+
+// ─── LOADING ANIMATION ───────────────────────────────────────────────────────
+function animateLoading() {
+  const statuses = [
+    'Identificando sua biologia...',
+    'Calculando motores dominantes...',
+    'Mapeando padrão corporal...',
+    'Selecionando arquétipo...',
+  ];
+  const tags = ['tag-bio','tag-corpo','tag-aparencia','tag-hormonal','tag-stress'];
+  let i = 0;
+
+  const statusEl = document.getElementById('loading-status');
+
+  const interval = setInterval(() => {
+    if (i < statuses.length) statusEl.textContent = statuses[i];
+    if (i < tags.length) document.getElementById(tags[i])?.classList.add('visible');
+    i++;
+    if (i >= statuses.length) clearInterval(interval);
+  }, 600);
+}
+</script>
+</body>
+</html>
